@@ -1,6 +1,7 @@
 "use client";
+
+import ChartOrders from "@/components/ChartOrders";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState(
@@ -10,117 +11,100 @@ export default function DashboardPage() {
     "daily"
   );
 
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{
+    orders: any[];
+    start_key: string;
+    end_key: string;
+  }>({
+    orders: [],
+    start_key: "",
+    end_key: ""
+  });
   const [loading, setLoading] = useState(false);
 
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/dashboard`);
-      const json = await res.json();
+      const res = await fetch(
+        `/api/dashboard?date=${selectedDate}&type=${viewMode}`
+      );
 
-      if (json.orders) {
-        setChartData(json.orders);
-      }
-    } catch (err) {
-      console.error("Fetch error:", err);
+      const json = await res.json();
+      console.log("Dashboard Data:", json.orders);
+      setChartData(json);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [selectedDate, viewMode]);
 
-  const totalOrders = chartData.reduce((sum, d) => sum + (d.total || 0), 0);
-  const maxOrders =
-    chartData.length > 0 ? Math.max(...chartData.map((d) => d.total)) : 1;
+  const totalOrders = chartData.orders.reduce(
+    (sum, order) => sum + (order.total || 0),
+    0
+  );
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-[#25AEAE] mb-2">Dashboard</h1>
-        <p className="text-[#72A5A5]">
-          Selamat datang kembali! Berikut adalah ringkasan hari ini.
-        </p>
-      </div>
+      <h1 className="text-4xl font-bold mb-4 text-[#25AEAE]">Dashboard</h1>
 
-      {/* Date Input */}
-      <div className="mb-8">
-        <label className="block text-sm font-medium text-[#25AEAE] mb-2">
+      {/* Tanggal */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-[#25AEAE] mb-1">
           Pilih Tanggal
         </label>
         <input
           type="date"
+          className="px-4 py-2 border border-[#72A5A5] rounded-lg"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="px-4 py-2 border-2 border-[#72A5A5] rounded-lg bg-white"
         />
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Link href="/dashboard/order">
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-[#25AEAE] hover:shadow-lg">
-            <p className="text-[#72A5A5] text-sm mb-2">Total Order</p>
-            <h2 className="text-4xl font-bold text-[#25AEAE]">
-              {String(totalOrders)}
-            </h2>
-          </div>
-        </Link>
+      {/* View Mode */}
+      <div className="flex gap-3 mb-6">
+        {[
+          { key: "daily", label: "Harian" },
+          { key: "weekly", label: "Mingguan" },
+          { key: "monthly", label: "Bulanan" },
+        ].map((m) => (
+          <button
+            key={m.key}
+            onClick={() => setViewMode(m.key as any)}
+            className={`px-4 py-2 rounded-lg border ${
+              viewMode === m.key
+                ? "bg-[#25AEAE] text-white border-[#25AEAE]"
+                : "bg-white text-[#25AEAE] border-[#25AEAE]"
+            }`}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Total Summary */}
+      <div className="mb-6 p-4 bg-white shadow rounded border-l-4 border-[#25AEAE]">
+        <p className="text-[#72A5A5] text-sm">Total Order</p>
+        <h2 className="text-3xl font-bold text-[#25AEAE]">{totalOrders}</h2>
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-[#25AEAE]">
-            Grafik Orderan - {selectedDate}
-          </h3>
-        </div>
+      <div className="bg-white p-6 shadow rounded">
+        <h3 className="text-xl font-bold text-[#25AEAE] mb-4">
+          Grafik Order ({viewMode})
+        </h3>
 
         {loading ? (
           <p className="text-center text-[#72A5A5]">Memuat data...</p>
         ) : (
-          <div className="overflow-x-auto">
-            <div className="flex gap-4 min-w-min">
-              {/* Y-axis */}
-              <div className="flex flex-col justify-between items-end w-12 text-xs text-[#72A5A5] pr-2">
-                <span>{maxOrders}</span>
-                <span>{Math.floor(maxOrders * 0.75)}</span>
-                <span>{Math.floor(maxOrders * 0.5)}</span>
-                <span>{Math.floor(maxOrders * 0.25)}</span>
-                <span>0</span>
-              </div>
-
-              {/* Bars */}
-              <div className="flex-1 min-w-96">
-                <div className="flex items-end justify-between h-80 border-b-2 border-l-2 border-[#72A5A5] pb-4">
-                  {chartData.map((d) => (
-                    <div key={d.id} className="flex-1 flex flex-col items-center">
-                      <div
-                        className="bg-gradient-to-t from-[#25AEAE] to-[#3dd4d4] rounded-t-lg w-3/4"
-                        style={{
-                          height: `${(d.total / maxOrders) * 300}px`,
-                        }}
-                      ></div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* X-axis */}
-                <div className="flex justify-between mt-2">
-                  {chartData.map((d) => (
-                    <div
-                      key={d.id}
-                      className="text-center text-xs text-[#72A5A5] w-8"
-                    >
-                      {d.date ? d.date.slice(5) : "-"}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <ChartOrders 
+            startDate={chartData.start_key || ""}
+            endDate={chartData.end_key || ""}
+            orders={chartData.orders || []}
+            totalOrders={totalOrders}
+          />
         )}
       </div>
     </div>
