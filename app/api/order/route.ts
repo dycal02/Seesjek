@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const endKey = searchParams.get("endKey");
 
    const couchdbUrl = new URL(
-  `${process.env.NEXT_PUBLIC_COUCHDB_URL}/${process.env.NEXT_PUBLIC_COUCHDB_DB}/_design/order/_view/by_date`
+  `${process.env.NEXT_PUBLIC_COUCHDB_URL}/${process.env.COUCHDB_DB}/_design/order/_view/by_date`
 );
 couchdbUrl.searchParams.append('inclusive_end', 'true');
 couchdbUrl.searchParams.append('start_key', startKey!);
@@ -16,8 +16,8 @@ couchdbUrl.searchParams.append('skip', '0');
 couchdbUrl.searchParams.append('limit', '21');
 couchdbUrl.searchParams.append('reduce', 'false');
 
-    const username = process.env.NEXT_PUBLIC_COUCHDB_USERNAME!;
-    const password = process.env.NEXT_PUBLIC_COUCHDB_PASSWORD!;
+    const username = process.env.COUCHDB_USERNAME!;
+    const password = process.env.COUCHDB_PASSWORD!;
 
     const response = await fetch(couchdbUrl.toString(), {
       method: "GET",
