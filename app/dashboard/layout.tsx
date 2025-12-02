@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { LayoutDashboard, Package, LogOut, Menu, X, BarChart3, Truck, Users } from 'lucide-react';
 
 const geistSans = Geist({
@@ -23,19 +23,18 @@ export default function RootLayout({
 }>) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', {
+      const response = await fetch('/api/auth/logout', {
         method: 'POST',
       });
-      // Redirect ke login
-      window.location.href = '/(auth)/login';
+      
+      if (response.ok) {
+        // Redirect ke login setelah logout berhasil
+        router.push('/login');
+      }
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -106,7 +105,10 @@ export default function RootLayout({
 
             {/* Logout Button */}
             <button
-              onClick={handleLogout}
+              onClick={() => {
+                handleLogout();
+                setIsMobileMenuOpen(false);
+              }}
               className="w-full px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 transition text-white font-medium flex items-center justify-center gap-2"
             >
               <LogOut className="w-5 h-5" />
