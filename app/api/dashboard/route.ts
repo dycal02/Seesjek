@@ -43,7 +43,7 @@ export async function GET(req: Request) {
         break;
     }
     const authString = Buffer.from(
-      `${process.env.NEXT_PUBLIC_COUCHDB_USERNAME}:${process.env.NEXT_PUBLIC_COUCHDB_PASSWORD}`
+      `${process.env.COUCHDB_USERNAME}:${process.env.COUCHDB_PASSWORD}`
     ).toString("base64");
 
     const res = await fetch(url, {
