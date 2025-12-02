@@ -41,10 +41,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
-      >
+
         <div className="flex flex-col md:flex-row h-screen">
           {/* Mobile Menu Toggle */}
           <button
@@ -129,10 +126,8 @@ export default function RootLayout({
             {children}
           </main>
         </div>
-      </body>
-    </html>
-  );
-}
+      );
+    }
 
 interface NavLinkProps {
   href: string;
