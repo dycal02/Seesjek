@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { Car, UtensilsCrossed, Package, HelpCircle, Search, Edit, Trash2 } from "lucide-react";
 
 interface Order {
   id: string;
@@ -73,13 +74,13 @@ export default function OrderPage() {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "ride":
-        return "🚗";
+        return <Car className="w-5 h-5 text-[#25AEAE]" />;
       case "food":
-        return "🍜";
+        return <UtensilsCrossed className="w-5 h-5 text-[#25AEAE]" />;
       case "send":
-        return "📦";
+        return <Package className="w-5 h-5 text-[#25AEAE]" />;
       default:
-        return "📋";
+        return <HelpCircle className="w-5 h-5 text-[#25AEAE]" />;
     }
   };
 
