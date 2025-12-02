@@ -10,11 +10,11 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit;
 
     // CouchDB URL
-    const url = `${process.env.NEXT_PUBLIC_COUCHDB_URL}/${process.env.NEXT_PUBLIC_COUCHDB_DB}/_design/user/_view/by_phoneNumber?reduce=false&include_docs=true&skip=${skip}&limit=${limit}`;
+    const url = `${process.env.NEXT_PUBLIC_COUCHDB_URL}/${process.env.COUCHDB_DB}/_design/user/_view/by_phoneNumber?reduce=false&include_docs=true&skip=${skip}&limit=${limit}`;
 
     // Auth
     const authString = Buffer.from(
-      `${process.env.NEXT_PUBLIC_COUCHDB_USERNAME}:${process.env.NEXT_PUBLIC_COUCHDB_PASSWORD}`
+      `${process.env.COUCHDB_USERNAME}:${process.env.COUCHDB_PASSWORD}`
     ).toString("base64");
 
     // Fetch
