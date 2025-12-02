@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const couchdbUrl = new URL(
-      `${process.env.NEXT_PUBLIC_COUCHDB_URL}/${process.env.NEXT_PUBLIC_COUCHDB_DB}/_design/driver/_view/by_phoneNumber`
+      `${process.env.NEXT_PUBLIC_COUCHDB_URL}/${process.env.COUCHDB_DB}/_design/driver/_view/by_phoneNumber`
     );
 
     couchdbUrl.searchParams.append("include_docs", "true");
@@ -12,8 +12,8 @@ export async function GET(req: Request) {
     couchdbUrl.searchParams.append("limit", "101");
     couchdbUrl.searchParams.append("reduce", "false");
 
-    const username = process.env.NEXT_PUBLIC_COUCHDB_USERNAME!;
-    const password = process.env.NEXT_PUBLIC_COUCHDB_PASSWORD!;
+    const username = process.env.COUCHDB_USERNAME!;
+    const password = process.env.COUCHDB_PASSWORD!;
 
     const res = await fetch(couchdbUrl.toString(), {
       method: "GET",
