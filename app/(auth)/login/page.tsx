@@ -1,8 +1,10 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
 	const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validasi password minimal 8 karakter
@@ -31,8 +33,30 @@ export default function LoginPage() {
 
     setError("");
     setIsLoading(true);
-    // Handle login logic here
-    setTimeout(() => setIsLoading(false), 1000);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Login berhasil, redirect ke dashboard
+        router.push('/dashboard');
+      } else {
+        // Login gagal, tampilkan error
+        setError(data.error || 'Login gagal');
+      }
+    } catch (err: any) {
+      setError('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
