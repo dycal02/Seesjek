@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f9f9] to-[#e8f4f4] flex items-center justify-center p-4 overflow-hidden relative">
+    <div className="min-h-screen bg-linear-to-br from-[#f0f9f9] to-[#e8f4f4] flex items-center justify-center p-4 overflow-hidden relative">
       {/* Circle Top Left */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-[#25AEAE] rounded-full opacity-10 -translate-x-1/2 -translate-y-1/2"></div>
 
